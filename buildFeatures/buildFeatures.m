@@ -18,7 +18,7 @@ encParam=alpha; % Use soft threshold encoder.
 fprintf('Loading training data...\n');
 f1=load([CIFAR_DIR '/train.mat']);
 
-trainX = double(f1.data');
+trainX = double(f1.data);
 trainY = double(f1.labels);
 clear f1;
 
@@ -59,7 +59,7 @@ trainX   = trainXCs';
 %% Load CIFAR test data
 fprintf('Loading test data...\n');
 f1 = load([CIFAR_DIR '/test.mat']);
-testX = double(f1.data');
+testX = double(f1.data);
 testY = double(f1.labels);
 clear f1;
 
