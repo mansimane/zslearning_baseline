@@ -1,7 +1,6 @@
 % Extract features from CIFAR-10.
 % Read README for instructions.
-function [] = buildFeatures(dataset)
-
+ function [] = buildFeatures(dataset)
 OUTPUT_DIR = ['../image_data/features/' dataset];
 CIFAR_DIR  = ['../image_data/images/' dataset];
 
@@ -56,12 +55,16 @@ trainXC_sd = sqrt(var(trainXC)+0.01);
 trainXCs = bsxfun(@rdivide, bsxfun(@minus, trainXC, trainXC_mean), trainXC_sd);
 trainX   = trainXCs';
 
+fprintf('Saving train data...\n');
+save([OUTPUT_DIR '/train.mat'], 'trainX', 'trainY', '-v7.3');
+%save('stat.mat','trainXC_mean','trainXC_sd','
+
 %% Load CIFAR test data
 fprintf('Loading test data...\n');
 f1 = load([CIFAR_DIR '/test.mat']);
 testX = double(f1.data);
 testY = double(f1.labels);
-clear f1;
+clear f1;s
 
 % compute testing features and standardize
 testXC  = extract_features(testX, dictionary, rfSize, CIFAR_DIM, M,P, encoder, encParam);
@@ -69,9 +72,7 @@ testXCs = bsxfun(@rdivide, bsxfun(@minus, testXC, trainXC_mean), trainXC_sd);
 testX   = testXCs';
 
 % save files
-fprintf('Saving train data...\n');
-save([OUTPUT_DIR '/train.mat'], 'trainX', 'trainY', '-v7.3');
 fprintf('Saving test data...\n');
 save([OUTPUT_DIR '/test.mat'], 'testX', 'testY', '-v7.3');
 
-end
+
