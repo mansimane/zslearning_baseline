@@ -67,12 +67,12 @@ if strcmp(dataset, 'cifar10') || strcmp(dataset, 'cifar96') || strcmp(dataset, '
     t = zeros(1, numTrainPerCat * length(nonZeroCategories));
     newV = zeros(1, numValidatePerCat * numCategories);
     for i = 1:length(nonZeroCategories)
-        [ ~, temp ] = find(trainY == nonZeroCategories(i));
+        [ ~, temp ] = find(trainY == (nonZeroCategories(i)-1));
         t((i-1)*numTrainPerCat+1:i*numTrainPerCat) = temp(1:numTrainPerCat);
         newV((i-1)*numValidatePerCat+1:i*numValidatePerCat) = temp(numTrainPerCat+1:end);
     end
     for i = 1:length(zeroCategories)
-        [ ~, temp ] = find(trainY == zeroCategories(i));
+        [ ~, temp ] = find(trainY == (zeroCategories(i)-1));
         j = length(nonZeroCategories) + i;
         newV((j-1)*numValidatePerCat+1:j*numValidatePerCat) = temp(1:numValidatePerCat);
     end
@@ -82,8 +82,12 @@ if strcmp(dataset, 'cifar10') || strcmp(dataset, 'cifar96') || strcmp(dataset, '
     t = t(order);
     order = randperm(numValidatePerCat * numCategories);
     newV = newV(order);
-    X = trainX(:, t);
-    Y = trainY(t);
+%     X = trainX(:, t);
+%     Y = trainY(t);
+
+    X = trainX(:, 1:10);
+    Y = trainY(1:10);
+
     Xvalidate = trainX(:, newV);
     Yvalidate = trainY(newV);
     save(sprintf('%s/perm.mat', outputPath), 't', 'newV');

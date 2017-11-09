@@ -64,7 +64,7 @@ fprintf('Loading test data...\n');
 f1 = load([CIFAR_DIR '/test.mat']);
 testX = double(f1.data);
 testY = double(f1.labels);
-clear f1;s
+clear f1;
 
 % compute testing features and standardize
 testXC  = extract_features(testX, dictionary, rfSize, CIFAR_DIM, M,P, encoder, encParam);
@@ -74,5 +74,3 @@ testX   = testXCs';
 % save files
 fprintf('Saving test data...\n');
 save([OUTPUT_DIR '/test.mat'], 'testX', 'testY', '-v7.3');
-
-
