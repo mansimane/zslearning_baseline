@@ -36,6 +36,7 @@ save(sprintf('%s/theta.mat', outputPath), 'theta', 'trainParams');
 % Get train accuracy
 mapDoEvaluate(X, Y, label_names, label_names, wordTable, theta, trainParams, true);
 
+
 disp('Training seen softmax features');
 mappedCategories = zeros(1, numCategories);
 mappedCategories(nonZeroCategories) = 1:numCategories-length(zeroCategories);
@@ -85,6 +86,7 @@ gUnseenAccuracies = fliplr(gUnseenAccuracies);
 gAccuracies = fliplr(gAccuracies);
 
 disp('Training LoOP model');
+fullParams.resolution = resolution;
 resolution = fullParams.resolution - 1;
 thresholds = 0:(1/resolution):1;
 lambdas = 1:13;
@@ -149,6 +151,15 @@ cutoffs = generateGaussianCutoffs(thetaSeen, thetaUnseen, theta, trainParamsSeen
   trainParamsUnseen, trainParams, X, Y, wordTable, 0.05, 1, zeroCategories, nonZeroCategories);
 
 disp('Run Bayesian pipeline for Gaussian model');
+thetaSeenSoftmax = thetaSeen;
+thetaUnseenSoftmax =  thetaUnseen;
+seenSmTrainParams = trainParamsSeen;
+unseenSmTrainParams = trainParamsUnseen;
+mapTrainParams = trainParams;
+thetaMapping = theta;
+
+validX = Xvalidate;
+validY =Yvalidate;
 [ guessedCategories, results ] = evaluateGaussianBayesian(thetaSeenSoftmax, thetaUnseenSoftmax, ...
     thetaMapping, seenSmTrainParams, unseenSmTrainParams, mapTrainParams, validX, ...
     validY, cutoffs, zeroCategories, nonZeroCategories, label_names, wordTable, true);

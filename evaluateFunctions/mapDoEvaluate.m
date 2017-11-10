@@ -16,7 +16,7 @@ for i = 1:length(originalCategoryNames)
 end
 mappedCategories = arrayfun(@(x) mappedCategorySet(x), categories);
 
-guessedCategoriesDebug = [ dist; mappedCategories; guessedCategories ];
+guessedCategoriesDebug = [ dist; mappedCategories'; guessedCategories ];
 
 % Calculate scores
 confusion = zeros(numCategories, numCategories);
