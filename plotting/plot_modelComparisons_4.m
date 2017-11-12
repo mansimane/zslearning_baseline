@@ -41,6 +41,6 @@ set(h_yl, 'FontSize', 24);
 hold off;
 
 % Save figure.
-filename_base = '../figures/modelComparisons';
+filename_base = './figures/modelComparisons';
 print('-dpdf', sprintf('%s.pdf', filename_base));
 print('-deps', sprintf('%s.eps', filename_base));

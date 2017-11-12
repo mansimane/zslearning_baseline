@@ -22,6 +22,6 @@ bar(1:numComparisons, accuracies, 0.4);
 set(gca,'XTick', 1:numComparisons, 'XTickLabel', labels);
 
 % Save figure.
-filename_base = '../figures/unseen_bar';
+filename_base = './figures/unseen_bar';
 print('-dpdf', sprintf('%s.pdf', filename_base));
 print('-deps', sprintf('%s.eps', filename_base));

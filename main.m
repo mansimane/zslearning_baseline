@@ -164,12 +164,18 @@ validY =Yvalidate;
     thetaMapping, seenSmTrainParams, unseenSmTrainParams, mapTrainParams, validX, ...
     validY, cutoffs, zeroCategories, nonZeroCategories, label_names, wordTable, true);
 
-% Save results.
+
+
+pdfSeenAccuracies = results.seenAccuracy;
+pdfUnseenAccuracies = results.unseenAccuracy;
+pdfAccuracies = results.accuracy;
+
+%Save results.
 save(sprintf('%s/out_%s.mat', outputPath, zeroStr), 'gSeenAccuracies', 'gUnseenAccuracies', 'gAccuracies', ...
     'loopSeenAccuracies', 'loopUnseenAccuracies', 'loopAccuracies', 'pdfSeenAccuracies', 'pdfUnseenAccuracies', ...
     'pdfAccuracies', 'bayesianResult');
 
-% Plot graphs
+%Plot graphs
 plot_unseen_bar_3
 plot_modelComparisons_4
-plot_randomConfusionWords_6
+%plot_randomConfusionWords_6

@@ -26,7 +26,7 @@ if strcmp(dataset, 'cifar10') || strcmp(dataset, 'cifar96') || strcmp(dataset, '
             zeroCategories = fullParams.zeroCategories;
         else
             % 'cat', 'truck'
-            zeroCategories = [ 9, 10 ];
+            zeroCategories = [ 4, 10 ];
         end
     elseif strcmp(dataset, 'cifar96')
         TOTAL_NUM_TRAIN = 48000;

@@ -33,7 +33,7 @@ for c_i = 1:length(nonZeroCategoryTypes)
     probs(dists < cutoffs(currentCategory)) = 0; % falls in circle; is not unseen    
 end
 
-finalProbs = bsxfun(@times, probSeenFull, 1 - probs) + bsxfun(@times, probUnseenFull, probs);
+finalProbs = bsxfun(@times, probSeenFull, 1 - probs') + bsxfun(@times, probUnseenFull, probs');
 [~, guessedCategories ] = max(finalProbs);
 
 % Calculate scores
