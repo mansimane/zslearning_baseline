@@ -68,8 +68,11 @@ if strcmp(dataset, 'cifar10') || strcmp(dataset, 'cifar96') || strcmp(dataset, '
     t = zeros(1, numTrainPerCat * length(nonZeroCategories));
     newV = zeros(1, numValidatePerCat * numCategories);
     for i = 1:length(nonZeroCategories)
+        
         [ temp, ~] = find((trainY) == (nonZeroCategories(i)));
+        %Train data indices corresponding to category are stored in t
         t((i-1)*numTrainPerCat+1:i*numTrainPerCat) = temp(1:numTrainPerCat);
+        %Validaiton data 
         newV((i-1)*numValidatePerCat+1:i*numValidatePerCat) = temp(numTrainPerCat+1:end);
     end
     for i = 1:length(zeroCategories)
