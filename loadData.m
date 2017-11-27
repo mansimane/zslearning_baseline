@@ -17,7 +17,7 @@ end
 trainY = trainY+1;
 testY =testY + 1;
 % Split data
-if strcmp(dataset, 'cifar10') || strcmp(dataset, 'cifar96') || strcmp(dataset, 'cifar106')
+if strcmp(dataset, 'cifar10') || strcmp(dataset, 'cifar96') || strcmp(dataset, 'cifar106') || strcmp(dataset, 'cifar10_small')
     if strcmp(dataset, 'cifar10')
         TOTAL_NUM_TRAIN = 50000;
         TOTAL_NUM_PER_CATEGORY = 5000;
@@ -27,6 +27,16 @@ if strcmp(dataset, 'cifar10') || strcmp(dataset, 'cifar96') || strcmp(dataset, '
         else
             % 'cat', 'truck'
             zeroCategories = [ 4, 10 ];
+        end
+    elseif strcmp(dataset, 'cifar10_small')
+        TOTAL_NUM_TRAIN = 10000;
+        TOTAL_NUM_PER_CATEGORY = 1000;
+        numCategories = 10;
+        if isfield(fullParams,'zeroCategories')
+            zeroCategories = fullParams.zeroCategories;
+        else
+            % 'cat', 'truck' 
+            zeroCategories = [ 4,10];
         end
     elseif strcmp(dataset, 'cifar96')
         TOTAL_NUM_TRAIN = 48000;

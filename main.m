@@ -12,7 +12,7 @@ addpath toolbox/pwmetric/;
 % - dataset is the image set we're using (CIFAR-10)
 % - word set is the name of the folder within word_data
 % containing word vectors (see README for details).
-fields = {{'dataset',        'cifar10'};
+fields = {{'dataset',        'cifar10_small'};
           {'wordset',        'acl'};
 };
 % END primary configurable parameters.
