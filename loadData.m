@@ -29,8 +29,8 @@ if strcmp(dataset, 'cifar10') || strcmp(dataset, 'cifar96') || strcmp(dataset, '
             zeroCategories = [ 4, 10 ];
         end
     elseif strcmp(dataset, 'cifar10_small')
-        TOTAL_NUM_TRAIN = 10000;
-        TOTAL_NUM_PER_CATEGORY = 1000;
+        TOTAL_NUM_TRAIN = 1000;
+        TOTAL_NUM_PER_CATEGORY = 100;
         numCategories = 10;
         if isfield(fullParams,'zeroCategories')
             zeroCategories = fullParams.zeroCategories;
