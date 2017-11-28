@@ -16,4 +16,4 @@ set(h_yl, 'FontSize', 24);
 
 file_name = './figures/gaussian_model_acc.jpg';
 Image = getframe(gcf);
-imwrite(Image.cdata, name);
+imwrite(Image.cdata, file_name);
