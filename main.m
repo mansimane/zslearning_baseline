@@ -90,7 +90,8 @@ end
 gSeenAccuracies = fliplr(gSeenAccuracies);
 gUnseenAccuracies = fliplr(gUnseenAccuracies);
 gAccuracies = fliplr(gAccuracies);
-plot_unseen_bar_3
+
+plot_Gaussian_model
 
 % disp('Training LoOP model');
 % fullParams.resolution = resolution;
