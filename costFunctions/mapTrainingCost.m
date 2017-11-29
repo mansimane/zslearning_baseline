@@ -2,6 +2,10 @@ function [cost, grad] = mapTrainingCost( theta, data, params )
 
 [ W, b ] = stack2param(theta, params.decodeInfo);
 
+cat_id = data.cat_id;
+ty = (cat_id == data.categories)';
+lambda_penalty = params.lambda_penalty;
+
 numImages = size(data.imgs, 2);
 allImgs = [ data.imgs ];
 numAllImages = size(allImgs, 2);
@@ -15,7 +19,9 @@ lambda = params.lambda;
 reg = 0.5 * lambda * (sum(sum(W{1} .^ 2)) + sum(sum(W{2} .^ 2)) + sum(b{1} .^ 2) + sum(b{2} .^ 2));
 sparsity = params.beta * sum(params.sparsityParam * log(params.sparsityParam ./ rhoHat) ...
     + (1 - params.sparsityParam) * log((1 - params.sparsityParam) ./ (1 - rhoHat)));
-cost = 0.5 * (1 / (numImages) * sum(sum((w - hAll).^2))) + sparsity + reg;
+J = sum( ty.*  sum((w - hAll).^2)) - sum(lambda_penalty *((1-ty) .* sum((w - hAll).^2))) ;
+
+cost = 0.5 * (1 / (numImages) * J ) + sparsity + reg;
 
 % Find error signal terms
 del3All = (hAll - w);
