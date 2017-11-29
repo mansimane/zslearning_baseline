@@ -35,10 +35,11 @@ trainParams.imageDataset = fullParams.dataset;
 
 for i =1: length(nonZeroCategories)
     cat_id = nonZeroCategories(i);
-    [theta, trainParams ] = trainMapping(X, Y, cat_id, trainParams, wordTable);
-    save(sprintf('%s/theta.mat', outputPath), 'theta', 'trainParams');
+    [theta{i}, trainParams ] = trainMapping(X, Y, cat_id, trainParams, wordTable);
+
 end
-% Get train accuracy
+save(sprintf('%s/theta.mat', outputPath), 'theta{i}', 'trainParams');
+    % Get train accuracy
 mapDoEvaluate(X, Y, label_names, label_names, wordTable, theta, trainParams, true);
 
 
