@@ -130,6 +130,7 @@ end
  gAccuracies = fliplr(gAccuracies);
 % 
  plot_Gaussian_model
+ plot_randomConfusionWords_6
 %% 
 
 % disp('Training LoOP model'); fullParams.resolution = resolution;
