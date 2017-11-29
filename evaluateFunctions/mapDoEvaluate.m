@@ -4,7 +4,7 @@ numImages = size(images, 2);
 numCategories = size(testWordTable, 2);
 
 % Feedforward
-mappedImages = mapDoMap(images, theta, trainParams);
+mappedImages = mapDoMap(images, theta{1}, trainParams);
 
 dist = slmetric_pw(testWordTable, mappedImages, 'eucdist');
 [ ~, guessedCategories ] = min(dist);
