@@ -1,4 +1,4 @@
-function [ guessedCategoriesDebug, results ] = mapDoEvaluate( images, categories, originalCategoryNames, testCategoryNames, testWordTable, theta, trainParams, doPrint )
+function [ guessedCategoriesDebug, results ] = mapDoEvaluate( images, categories, cat_id, originalCategoryNames, testCategoryNames, testWordTable, theta, trainParams, doPrint )
 
 numImages = size(images, 2);
 numCategories = size(testWordTable, 2);

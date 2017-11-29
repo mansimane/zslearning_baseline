@@ -21,11 +21,11 @@ numDistractors = 2:2:40; % Sequence of distractor word numbers (x-axis on graph)
 addpath toolbox/pwmetric/;
 
 disp('Loading random words for evaluation');
-ee = load(['word_data/' dataset '/wordreps.mat']);
+ee = load(['word_data/' dataset '/wordreps_orig.mat']);
 vv = load(['word_data/' dataset '/vocab.mat']);
 
-load image_data/images/cifar10/meta.mat;
-load(['word_data/acl' '/cifar10/wordTable.mat']);
+load image_data/images/cifar10_small/meta.mat;
+load(['word_data/acl' '/cifar10_small/wordTable.mat']);
 
 Xt = testX(:, testY == 10);
 Yt = testY(testY == 10);
@@ -33,16 +33,16 @@ mX = mapDoMap(Xt, theta, trainParams);
 
 accuracies = zeros(length(confusionCategories)+1, length(numDistractors));
 for tt = 1:length(confusionCategories)
-    confusionWordIds = knnsearch(ee.We(:,:,tt)', wordTable(:, confusionCategories(tt))', 'K', 100);
+    confusionWordIds = knnsearch(ee.oWe', wordTable(:, confusionCategories(tt))', 'K', 100);
     confusionWords_trainedRemoved = confusionWordIds(:, ~ismember(vv.vocab(confusionWordIds), label_names));
     fprintf('Neighbors for %s\n', label_names{confusionCategories(tt)});
     disp(vv.vocab(confusionWords_trainedRemoved(1:30)));
     for j = 1:length(numDistractors)
-        words = [ wordTable(:, zeroCategories) ee.We(:, confusionWords_trainedRemoved(1:numDistractors(j)), zeroCategories)];
+        words = [ wordTable(:, zeroCategories) ee.oWe(:, confusionWords_trainedRemoved(1:numDistractors(j)))];
         tDist = slmetric_pw(words, mX, 'eucdist');
         [~, tGuessedCategories ] = min(tDist);
         candidateIds = ismember(tGuessedCategories, 1:length(zeroCategories));
-        accuracies(tt, j) = sum(Yt(candidateIds) == zeroCategories(tGuessedCategories(candidateIds))) / length(Yt);
+        accuracies(tt, j) = sum(Yt(candidateIds)' == zeroCategories(tGuessedCategories(candidateIds))) / length(Yt);
     end
 end
 
@@ -52,17 +52,18 @@ confusionWordIds = randi(length(vv.vocab), 1, 100);
 confusionWords_trainedRemoved = confusionWordIds(:, ~ismember(vv.vocab(confusionWordIds), label_names));
 disp(vv.vocab(confusionWords_trainedRemoved(1:30)));
 for j = 1:length(numDistractors)
-    words = [ wordTable(:, zeroCategories) ee.We(:, confusionWords_trainedRemoved(1:numDistractors(j)), zeroCategories)];
+    words = [ wordTable(:, zeroCategories) ee.oWe(:, confusionWords_trainedRemoved(1:numDistractors(j)))];
     tDist = slmetric_pw(words, mX, 'eucdist');
     [~, tGuessedCategories ] = min(tDist);
     candidateIds = ismember(tGuessedCategories, 1:length(zeroCategories));
     accuracies(length(confusionCategories)+1, j) = sum(Yt(candidateIds) == zeroCategories(tGuessedCategories(candidateIds))) / length(Yt);
 end
 
-markers = { '-+r', '-ob', '-dm' };
-hold on;
+figure,
+markers = { '-+r', '-ob', '-m' };
 for i = 1:length(confusionCategories)+1
     plot(numDistractors, accuracies(i, :), markers{i}, 'linewidth', 2);
+    hold on;
 end
 h_legend = legend([ arrayfun(@(x) ['Neighbors of ', char(x)], label_names(confusionCategories), 'UniformOutput', false)', 'Random']);
 h_xl = xlabel('Number of distractor words');

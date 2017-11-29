@@ -36,11 +36,11 @@ trainParams.imageDataset = fullParams.dataset;
 for i =1: length(nonZeroCategories)
     cat_id = nonZeroCategories(i);
     [theta{i}, trainParams ] = trainMapping(X, Y, cat_id, trainParams, wordTable);
+    mapDoEvaluate(X, Y, cat_id, label_names, label_names, wordTable, theta{i}, trainParams, true);
 
 end
-save(sprintf('%s/theta.mat', outputPath), 'theta{i}', 'trainParams');
+save(sprintf('%s/theta.mat', outputPath), 'theta', 'trainParams');
     % Get train accuracy
-mapDoEvaluate(X, Y, label_names, label_names, wordTable, theta, trainParams, true);
 
 
 % disp('Training seen softmax features');
