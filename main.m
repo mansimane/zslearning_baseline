@@ -38,33 +38,34 @@ for i =1: length(nonZeroCategories)
     [theta{i}, trainParams ] = trainMapping(X, Y, cat_id, trainParams, wordTable);
 
 end
-mapDoEvaluate(X, Y, cat_id, label_names, label_names, wordTable, theta, trainParams, true);
+seen_label_names = label_names(nonZeroCategories);
+mapDoEvaluate(X, Y, cat_id, nonZeroCategories, label_names, seen_label_names, wordTable, theta, trainParams, true);
 save(sprintf('%s/theta.mat', outputPath), 'theta', 'trainParams');
     % Get train accuracy
 
 
-% disp('Training seen softmax features');
-% mappedCategories = zeros(1, numCategories);
+disp('Training seen softmax features');
+mappedCategories = zeros(1, numCategories);
 % % mappedCategories = 1     2     3     0     4     5     6     7     8     0
-% mappedCategories(nonZeroCategories) = 1:numCategories-length(zeroCategories);
-% trainParamsSeen.nonZeroShotCategories = nonZeroCategories;
+mappedCategories(nonZeroCategories) = 1:numCategories-length(zeroCategories);
+trainParamsSeen.nonZeroShotCategories = nonZeroCategories;
 % %mappedCategories(Y) maps category labels from disjoint nonzeroshot category lables
 % %like 1,2,3,5,6,7,8,9 to continuout values like 1,2,3,4,5,6,7,8
-% [thetaSeen, trainParamsSeen] = nonZeroShotTrain(X, mappedCategories(Y), trainParamsSeen, label_names(nonZeroCategories));
-% save(sprintf('%s/thetaSeenSoftmax.mat', outputPath), 'thetaSeen', 'trainParamsSeen');
+[thetaSeen, trainParamsSeen] = nonZeroShotTrain(X, mappedCategories(Y), trainParamsSeen, label_names(nonZeroCategories));
+
+save(sprintf('%s/thetaSeenSoftmax.mat', outputPath), 'thetaSeen', 'trainParamsSeen');
 % % Get train accuracy
-% softmaxDoEvaluate( X, Y, label_names, thetaSeen, trainParamsSeen, true );
-% 
-% disp('Training unseen softmax features');
-% trainParamsUnseen.zeroShotCategories = zeroCategories;
-% trainParamsUnseen.imageDataset = fullParams.dataset;
-% trainParamsUnseen.wordDataset = fullParams.wordset;
-% [thetaUnseen, trainParamsUnseen] = zeroShotTrain(trainParamsUnseen);
-% save(sprintf('%s/thetaUnseenSoftmax.mat', outputPath), 'thetaUnseen', 'trainParamsUnseen');
+softmaxDoEvaluate( X, Y, label_names, thetaSeen, trainParamsSeen, true );
+ 
+disp('Training unseen softmax features');
+trainParamsUnseen.zeroShotCategories = zeroCategories;
+trainParamsUnseen.imageDataset = fullParams.dataset;
+trainParamsUnseen.wordDataset = fullParams.wordset;
+[thetaUnseen, trainParamsUnseen] = zeroShotTrain(trainParamsUnseen);
+save(sprintf('%s/thetaUnseenSoftmax.mat', outputPath), 'thetaUnseen', 'trainParamsUnseen');
 % 
 % % Train Gaussian classifier
-% disp('Training Gaussian classifier using Mixture of Gaussians');
-% 
+disp('Training Gaussian classifier using Mixture of Gaussians');
 % mapped = mapDoMap(X, theta, trainParams);
 % [mu, sigma, priors] = trainGaussianDiscriminant(mapped, Y, numCategories, wordTable);
 % sortedLogprobabilities = sort(predictGaussianDiscriminant(mapped, mu, sigma, priors, zeroCategories));
