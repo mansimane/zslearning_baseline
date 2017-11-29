@@ -1,4 +1,6 @@
-clear 
+clear all
+clc
+close all
 addpath gaussianFunctions/;
 addpath loopFunctions/;
 addpath costFunctions/;
@@ -64,41 +66,70 @@ trainParamsUnseen.wordDataset = fullParams.wordset;
 [thetaUnseen, trainParamsUnseen] = zeroShotTrain(trainParamsUnseen);
 save(sprintf('%s/thetaUnseenSoftmax.mat', outputPath), 'thetaUnseen', 'trainParamsUnseen');
 % 
-% % Train Gaussian classifier
+% % Train Gaussian classifier %mu 10x50, sigma: 10x1
+D =trainParams.outputSize;
+mu = zeros(numCategories, D );
+sigma = zeros(numCategories,1);
 disp('Training Gaussian classifier using Mixture of Gaussians');
-% mapped = mapDoMap(X, theta, trainParams);
-% [mu, sigma, priors] = trainGaussianDiscriminant(mapped, Y, numCategories, wordTable);
-% sortedLogprobabilities = sort(predictGaussianDiscriminant(mapped, mu, sigma, priors, zeroCategories));
-% 
+priors = zeros(numCategories,1);
+k = 1;
+mapped = cell(length(nonZeroCategories),1);
+for i =1:numCategories
+    if ismember(i,nonZeroCategories)
+        mapped{k} = mapDoMap(X, theta{k}, trainParams);
+        [mu(i,:), sigma(i), priors(i)] = trainGaussianDiscriminant(mapped{k}, Y, i, numCategories, wordTable(:,i));
+        k = k+1;
+    else
+        mu(i,:) = wordTable(:,i)';
+        priors(i) = sum(Y == cat_id)/ length(Y);
+        
+    end
+end
+[~,numTraining] = size(X);
+sorted_train_Logprob = zeros(length(nonZeroCategories), numTraining );
+mappedTestImages = cell(length(nonZeroCategories),1);
+for i = 1: length(nonZeroCategories)
+    cat_id = nonZeroCategories(i);
+    sorted_train_Logprob(i,:) = predictGaussianDiscriminant(mapped{i}, mu(cat_id,:), sigma(cat_id), priors(cat_id));
+    mappedTestImages{i} = mapDoMap(testX, theta{i}, trainParams);
+
+end
+    % 
 % % Test
-% mappedTestImages = mapDoMap(testX, theta, trainParams);
+%mappedTestImages = mapDoMap(testX, theta, trainParams);
+sorted_train_Logprob = sort(sum(sorted_train_Logprob));
+resolution = 11;
+gSeenAccuracies = zeros(1, resolution);
+gUnseenAccuracies = zeros(1, resolution);
+gAccuracies = zeros(1, resolution);
+numPerIteration = floor(length(sorted_train_Logprob) / (resolution-1));
+
+for i = 1: length(nonZeroCategories)
+    cat_id = nonZeroCategories(i);
+    logprobabilities(i,:) = predictGaussianDiscriminant(mappedTestImages{i}, mu(cat_id,:), sigma(cat_id), priors(cat_id));
+end
+%logprobabilities = sum(logprobabilities);
+
+% sortedLogprobabilities (ascending order)= a   b   c   d   e   f   g   h
+% if numPerIteration 3
+%cutoffs = [a , d, g]
+cutoffs = [ arrayfun(@(x) sorted_train_Logprob((x-1)*numPerIteration+1), 1:resolution-1) sorted_train_Logprob(end) ];
+for i = 1:resolution
+    cutoff = cutoffs(i);
+    % Test Gaussian classifier
+    fprintf('With cutoff %f:\n', cutoff);
+    results = mapGaussianThresholdDoEvaluate( testX, mappedTestImages, testY, zeroCategories, label_names, wordTable, ...
+        theta, trainParams, thetaSeen, trainParamsSeen, thetaUnseen, trainParamsUnseen, logprobabilities, cutoff, true);
+
+    gSeenAccuracies(i) = results.seenAccuracy;
+    gUnseenAccuracies(i) = results.unseenAccuracy;
+    gAccuracies(i) = results.accuracy;
+end
+ gSeenAccuracies = fliplr(gSeenAccuracies);
+ gUnseenAccuracies = fliplr(gUnseenAccuracies);
+ gAccuracies = fliplr(gAccuracies);
 % 
-% resolution = 11;
-% gSeenAccuracies = zeros(1, resolution);
-% gUnseenAccuracies = zeros(1, resolution);
-% gAccuracies = zeros(1, resolution);
-% numPerIteration = floor(length(sortedLogprobabilities) / (resolution-1));
-% logprobabilities = predictGaussianDiscriminant(mappedTestImages, mu, sigma, priors, zeroCategories);
-% % sortedLogprobabilities (ascending order)= a   b   c   d   e   f   g   h
-% % if numPerIteration 3
-% %cutoffs = [a , d, g]
-% cutoffs = [ arrayfun(@(x) sortedLogprobabilities((x-1)*numPerIteration+1), 1:resolution-1) sortedLogprobabilities(end) ];
-% for i = 1:resolution
-%     cutoff = cutoffs(i);
-%     % Test Gaussian classifier
-%     fprintf('With cutoff %f:\n', cutoff);
-%     results = mapGaussianThresholdDoEvaluate( testX, testY, zeroCategories, label_names, wordTable, ...
-%         theta, trainParams, thetaSeen, trainParamsSeen, thetaUnseen, trainParamsUnseen, logprobabilities, cutoff, true);
-% 
-%     gSeenAccuracies(i) = results.seenAccuracy;
-%     gUnseenAccuracies(i) = results.unseenAccuracy;
-%     gAccuracies(i) = results.accuracy;
-% end
-% gSeenAccuracies = fliplr(gSeenAccuracies);
-% gUnseenAccuracies = fliplr(gUnseenAccuracies);
-% gAccuracies = fliplr(gAccuracies);
-% 
-% plot_Gaussian_model
+ plot_Gaussian_model
 %% 
 
 % disp('Training LoOP model'); fullParams.resolution = resolution;
