@@ -35,13 +35,14 @@ disp('Training mapping function');
 % Train mapping function
 trainParams.imageDataset = fullParams.dataset;
 
-for i =1: length(nonZeroCategories)
-    cat_id = nonZeroCategories(i);
-    [theta{i}, trainParams ] = trainMapping(X, Y, cat_id, trainParams, wordTable);
-
-end
+% for i =1: length(nonZeroCategories)
+%     cat_id = nonZeroCategories(i);
+%     [theta{i}, trainParams ] = trainMapping(X, Y, cat_id, trainParams, wordTable);
+% 
+% end
+load('./gauss_cifar10_acl_cat_truck/theta.mat');
 seen_label_names = label_names(nonZeroCategories);
-mapDoEvaluate(X, Y, cat_id, nonZeroCategories, label_names, seen_label_names, wordTable, theta, trainParams, true);
+mapDoEvaluate(X, Y, nonZeroCategories, label_names, seen_label_names, wordTable, theta, trainParams, true);
 save(sprintf('%s/theta.mat', outputPath), 'theta', 'trainParams');
     % Get train accuracy
 
@@ -81,7 +82,7 @@ for i =1:numCategories
         k = k+1;
     else
         mu(i,:) = wordTable(:,i)';
-        priors(i) = sum(Y == cat_id)/ length(Y);
+        priors(i) = sum(Y == i)/ length(Y);
         
     end
 end

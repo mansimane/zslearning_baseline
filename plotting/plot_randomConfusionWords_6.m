@@ -15,7 +15,7 @@ zeroCategories = [4, 10]; % Cat, truck (by default, as used in the paper)
 confusionCategories = [ 4, 10 ]; % Categories to use in nearest neighbor search.
                                  % May or may not be equal to zeroCategories.
 numDistractors = 2:2:40; % Sequence of distractor word numbers (x-axis on graph)
-
+% 2     4     6     8    10    12    14    16    18  
 %%% Begin code
 
 addpath toolbox/pwmetric/;
@@ -29,8 +29,8 @@ load(['word_data/acl' '/cifar10_small/wordTable.mat']);
 
 Xt = testX(:, testY == 10);
 Yt = testY(testY == 10);
-mX = mapDoMap(Xt, theta, trainParams);
-
+mX = mapDoMap(Xt, theta{7}, trainParams);
+%???
 accuracies = zeros(length(confusionCategories)+1, length(numDistractors));
 for tt = 1:length(confusionCategories)
     confusionWordIds = knnsearch(ee.oWe', wordTable(:, confusionCategories(tt))', 'K', 100);
@@ -56,7 +56,7 @@ for j = 1:length(numDistractors)
     tDist = slmetric_pw(words, mX, 'eucdist');
     [~, tGuessedCategories ] = min(tDist);
     candidateIds = ismember(tGuessedCategories, 1:length(zeroCategories));
-    accuracies(length(confusionCategories)+1, j) = sum(Yt(candidateIds) == zeroCategories(tGuessedCategories(candidateIds))) / length(Yt);
+    accuracies(length(confusionCategories)+1, j) = sum(Yt(candidateIds)' == zeroCategories(tGuessedCategories(candidateIds))) / length(Yt);
 end
 
 figure,
@@ -77,6 +77,6 @@ set(gcf,'paperunits','centimeters')
 set(gcf,'papersize',[21,20]) % Desired outer dimensionsof figure
 set(gcf,'paperposition',[0,0,21,20]) % Place plot on figure
 
-filename_base = '../figures/randomConfusionWords';
+filename_base = './figures/randomConfusionWords';
 print('-dpdf', sprintf('%s.pdf', filename_base));
 print('-deps', sprintf('%s.eps', filename_base));

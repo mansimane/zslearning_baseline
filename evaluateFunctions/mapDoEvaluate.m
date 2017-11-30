@@ -1,4 +1,4 @@
-function [ guessedCategoriesDebug, results ] = mapDoEvaluate( images, categories, cat_id, nonZeroCategories, originalCategoryNames, testCategoryNames, testWordTable, theta, trainParams, doPrint )
+function [ guessedCategoriesDebug, results ] = mapDoEvaluate( images, categories, nonZeroCategories, originalCategoryNames, testCategoryNames, testWordTable, theta, trainParams, doPrint )
 
 numImages = size(images, 2);
 numCategories = size(testWordTable, 2);
@@ -12,7 +12,7 @@ for i =1:numSeenCat
     cat_id = nonZeroCategories(i);
     %find projection of every image using respective theta
     mappedImages = mapDoMap(images, theta{i}, trainParams);
-    w = testWordTable(:,i);%Dx1
+    w = testWordTable(:,cat_id);%Dx1
     %w = repmat(w,1,numImages);
     dist(cat_id,:) = slmetric_pw(w,mappedImages,'eucdist');  %8xN
 end

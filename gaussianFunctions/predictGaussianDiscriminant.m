@@ -7,8 +7,6 @@ numTraining = size(projectedImageFeatures, 2);
 probability = zeros(1, numTraining);
 temp = bsxfun(@minus, projectedImageFeatures, mu');
 logprobability = -0.5*(sum(1/sigma_elem*(temp.^2), 1) + dim*log(2*pi) + dim*log(sigma_elem));
-probability = priors*exp(logprobability);
-
-logprobability = log(probability);
+logprobability = log(priors)+logprobability;
 
 end
