@@ -27,9 +27,11 @@ vv = load(['word_data/' dataset '/vocab.mat']);
 load image_data/images/cifar10_small/meta.mat;
 load(['word_data/acl' '/cifar10_small/wordTable.mat']);
 
-Xt = testX(:, testY == 10);
+%Xt = testX(:, testY == 10);
 Yt = testY(testY == 10);
-mX = mapDoMap(Xt, theta{7}, trainParams);
+%mX = mapDoMap(Xt, theta{7}, trainParams);
+load('.\gauss_cifar10_acl_cat_truck\mappedTestImages.mat');
+mX = 
 %???
 accuracies = zeros(length(confusionCategories)+1, length(numDistractors));
 for tt = 1:length(confusionCategories)

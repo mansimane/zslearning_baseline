@@ -34,7 +34,7 @@ fields = {{'wordDataset',         'acl'};            % type of embedding dataset
           {'sparsityParam',       0.035};  % desired average activation of the hidden units.
           {'beta',                5};      % weight of sparsity penalty term
           {'epochs',              100};      % Number of epochs to train for
-          {'batch_size',          100};    % Batchsize for gradient calcultation
+          {'batch_size',          128};    % Batchsize for gradient calcultation
           {'lr',                  0.01};    % Batchsize for gradient calcultation
 };
 
@@ -74,14 +74,15 @@ train_iter = no_of_samples/ batch_size ;
 indices = randperm(no_of_samples);
 cost_array = zeros(1,trainParams.epochs);
 for i = 1: trainParams.epochs
-    for j = 1:train_iter
-        start_idx = mod(j*batch_size, no_of_samples);
-        end_idx = mod((j+1)*batch_size, no_of_samples);
-        
-        if start_idx> end_idx
-            indices = randperm(no_of_samples);
-            continue
-        end
+    indices = randperm(no_of_samples);
+    for j = 1:batch_size:no_of_samples-batch_size
+         start_idx = j;
+         end_idx = j+batch_size;
+%         
+%         if start_idx> end_idx
+%             indices = randperm(no_of_samples);
+%             continue
+%         end
         idx = indices(start_idx:end_idx);
         dataToUse.imgs = X(:,idx);
         dataToUse.categories = Y(idx);
@@ -90,6 +91,7 @@ for i = 1: trainParams.epochs
         [theta] = updateParam(theta,grad, trainParams);
         
     end
+    
     fprintf('Epoch = %d, cost = %d\n', i, cost);
     cost_array(i) = cost;
 end
