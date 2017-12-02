@@ -1,8 +1,10 @@
 % Visualize t-SNE mapped word vectors.
 
 function [] = visualize(mappedX, Y, mappedWordTable, label_names, images, images_to_show)
+Y = (Y==1);
+gscatter(mappedX(:,1), mappedX(:,2), label_names(Y+1), [], '+o', 2);
 
-gscatter(mappedX(:,1), mappedX(:,2), label_names(Y), [], '+o*.xsd^v>', 7);
+gscatter(mappedX(:,1), mappedX(:,2), label_names(Y+1), [], '+o*.xsd^v>', 7);
 hold on;
 
 % Add actual images

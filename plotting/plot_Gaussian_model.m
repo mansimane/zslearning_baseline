@@ -14,6 +14,7 @@ set(h_title, 'FontSize', 24);
 set(h_xl, 'FontSize', 24);
 set(h_yl, 'FontSize', 24);
 legend([p1, p2], 'Unseen Acc', 'Seen Acc');
-file_name = './figures/gaussian_model_acc.jpg';
+
+file_name = [outputPath '/gaussian_model_acc.jpg'];
 Image = getframe(gcf);
 imwrite(Image.cdata, file_name);

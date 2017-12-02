@@ -8,7 +8,7 @@ addpath costFunctions/;
 %% Model Parameters
 fields = {{'wordDataset',         'acl'};            % type of embedding dataset to use ('turian.200', 'acl')
           {'lambda',              1E-4};   % regularization parameter
-          {'lambda_penalty',      1E-4};   % regularization parameter
+          {'lambda_penalty',      0.01};   % regularization parameter
           {'numReplicate',        0};     % one-shot replication
           {'dropoutFraction',     1};    % drop-out fraction
           {'costFunction',        @mapTrainingCostOneLayer}; % training cost function
