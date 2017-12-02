@@ -39,11 +39,11 @@ trainParams.imageDataset = fullParams.dataset;
 trainParams.lambda_penalty = fullParams.lambda_penalty;
 
 
-% for i =1: length(nonZeroCategories)
-%     cat_id = nonZeroCategories(i);
-%     [theta{i}, trainParams ] = trainMapping(X, Y, cat_id, trainParams, wordTable);
-% 
-% end
+for i =1: length(nonZeroCategories)
+    cat_id = nonZeroCategories(i);
+    [theta{i}, trainParams ] = trainMapping(X, Y, cat_id, trainParams, wordTable);
+
+end
 load('./gauss_cifar10_acl_cat_truck/theta.mat');
 seen_label_names = label_names(nonZeroCategories);
 mapDoEvaluate(X, Y, nonZeroCategories, label_names, seen_label_names, wordTable, theta, trainParams, true);

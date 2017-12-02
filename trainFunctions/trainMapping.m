@@ -33,6 +33,9 @@ fields = {{'wordDataset',         'acl'};            % type of embedding dataset
           {'autoencMultStart',    0.01};   % starting value for autoenc mult
           {'sparsityParam',       0.035};  % desired average activation of the hidden units.
           {'beta',                5};      % weight of sparsity penalty term
+          {'epochs',              100};      % Number of epochs to train for
+          {'batch_size',          100};    % Batchsize for gradient calcultation
+          {'lr',                  0.01};    % Batchsize for gradient calcultation
 };
 
 % Load existing model parameters, if they exist
@@ -61,12 +64,44 @@ trainParams.outputSize = size(wordTable, 1);
 [ theta, trainParams.decodeInfo ] = initializeParameters(trainParams);
 
 globalStart = tic;
-dataToUse.imgs = X;
-dataToUse.categories = Y;
+% dataToUse.imgs = X;
+% dataToUse.categories = Y;
 dataToUse.wordTable = wordTable;
 dataToUse.cat_id = cat_id;
+batch_size = trainParams.batch_size;
+no_of_samples = size(X,2);
+train_iter = no_of_samples/ batch_size ;
+indices = randperm(no_of_samples);
+cost_array = zeros(1,trainParams.epochs);
+for i = 1: trainParams.epochs
+    for j = 1:train_iter
+        start_idx = mod(j*batch_size, no_of_samples);
+        end_idx = mod((j+1)*batch_size, no_of_samples);
+        
+        if start_idx> end_idx
+            indices = randperm(no_of_samples);
+            continue
+        end
+        idx = indices(start_idx:end_idx);
+        dataToUse.imgs = X(:,idx);
+        dataToUse.categories = Y(idx);
 
-theta = trainParams.trainFunction(trainParams, dataToUse, theta);
+        [cost, grad] = mapTrainingCost( theta, dataToUse, trainParams );
+        [theta] = updateParam(theta,grad, trainParams);
+        
+    end
+    fprintf('Epoch = %d, cost = %d\n', i, cost);
+    cost_array(i) = cost;
+end
+%theta = trainParams.trainFunction(trainParams, dataToUse, theta);
+figure;
+plot(cost_array);
+xlabel('epochs');
+ylabel('MSE');
+title('Error vs Epochs');
+file_name = ['/training_error.jpg'];
+Image = getframe(gcf);
+imwrite(Image.cdata, file_name);
 
 gtime = toc(globalStart);
 fprintf('Total time: %f s\n', gtime);
