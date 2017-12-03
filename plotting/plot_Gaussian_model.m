@@ -1,3 +1,4 @@
+figure;
 set(gcf,'paperunits','centimeters')
 set(gcf,'papersize',[35,15]) % Desired outer dimensionsof figure
 set(gcf,'paperposition',[0,0,35,15]) % Place plot on figure

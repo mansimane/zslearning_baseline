@@ -1,4 +1,4 @@
-function [ guessedCategoriesDebug, results ] = mapDoEvaluate( images, categories, nonZeroCategories, originalCategoryNames, testCategoryNames, testWordTable, theta, trainParams, doPrint )
+function [ guessedCategoriesDebug, results ] = mapDoEvaluate( images, categories, nonZeroCategories, originalCategoryNames, testCategoryNames, testWordTable, theta, trainParams, outputPath, doPrint )
 
 numImages = size(images, 2);
 numCategories = size(testWordTable, 2);
@@ -54,6 +54,12 @@ if doPrint == true
     disp(['Averaged recall: ' num2str(results.avgRecall)]);
     displayConfusionMatrix(confusion, testCategoryNames);
 end
+
+imagesc(confusion);
+title('Confustion Matrix post Mapping training');
+file_name = [outputPath '/mapDoEval_conf.jpg'];
+Image = getframe(gcf);
+imwrite(Image.cdata, file_name);
 
 end
 

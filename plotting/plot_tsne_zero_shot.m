@@ -46,10 +46,17 @@ for i=1:num_seen_cats
     mappedX_t = t((i-1)*numImages +1 : (i-1)*numImages + numImages,:);
     cat_id = nonZeroCategories(i);
 
-    idx = find(Y~=cat_id);
-    scatter(mappedX_t(idx,1), mappedX_t(idx,2),3,'bo');
-    idx = find(Y==cat_id);
-    scatter(mappedX_t(idx,1), mappedX_t(idx,2),4, 'r+');
+%     idx = find(Y~=cat_id);
+%     scatter(mappedX_t(idx,1), mappedX_t(idx,2),3,'bo');
+%     idx = find(Y==cat_id);
+%     scatter(mappedX_t(idx,1), mappedX_t(idx,2),4, 'r+');
+    
+    %Index finding Can be moved outside loop
+    idx_z1 = find(Y== zeroCategories(1));
+    scatter(mappedX_t(idx_z1,1), mappedX_t(idx_z1,2),3,'g*');
+    
+    idx_z2 = find(Y== zeroCategories(2));
+    scatter(mappedX_t(idx_z2,1), mappedX_t(idx_z1,2),3,'m*');
     %gscatter(mappedX_t(idx,1), mappedX_t(idx,2), label_names(Y_bin), [], '+', 8);
     hold on;
     %gscatter(mappedX_t(idx,1), mappedX_t(idx,2), label_names(Y_bin), [], 'o', 8);
@@ -61,39 +68,11 @@ for i=1:num_seen_cats
 %     %gscatter(mappedX_t(:,1), mappedX_t(:,2), label_names(Y_bin), [], sym_array, 8);
 end
 
-
 axis off;
 hold off;
 
 %title('Confustion Matrix post Mapping training');
-file_name = [outputPath '/SemanticWordSpace_seen.jpg'];
+file_name = [outputPath '/SemanticWordSpace_zero_shot.jpg'];
 Image = getframe(gcf);
 imwrite(Image.cdata, file_name);
 
-%% 
-% for i=1:num_seen_cats
-%     disp(i);
-%     t = tsne([mappedTestImages{2} wordTable]');
-%     [C,t,l]= pca([mappedTestImages{2} wordTable]','NumComponents',2);
-% 
-%     mappedX_t = t(1:numImages, :);
-%     mappedWordTable_t = t(numImages+1:end, :);
-% 
-%     do the visualization
-%     visualize(mappedX_t, Y, mappedWordTable_t, label_names);
-%     figure;
-%     Y_bin = (Y==i);
-%     Y_bin = Y_bin* i;
-%     Y_bin = Y_bin + 1;
-%     hold on;
-%     gscatter(mappedX_t(:,1), mappedX_t(:,2), label_names(Y_bin), [], '+o*.xsd^v><', 8);
-%     hold on;
-% end
-% hold on;
-% 
-% scatter(mappedWordTable_t(:,1), mappedWordTable_t(:,2), 200, 'd', 'k', 'filled');
-% for i = 1:length(label_names)-1
-%     text(mappedWordTable_t(i,1),mappedWordTable_t(i,2),label_names{i+1},'BackgroundColor',[.7 .9 .7]);        
-% end
-% axis off;
-% hold off;
