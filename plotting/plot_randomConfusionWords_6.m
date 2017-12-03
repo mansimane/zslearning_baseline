@@ -31,7 +31,7 @@ load(['word_data/acl' '/cifar10_small/wordTable.mat']);
 Yt = testY(testY == 10);
 %mX = mapDoMap(Xt, theta{7}, trainParams);
 load('.\gauss_cifar10_acl_cat_truck\mappedTestImages.mat');
-mX = 
+% mX = 
 %???
 accuracies = zeros(length(confusionCategories)+1, length(numDistractors));
 for tt = 1:length(confusionCategories)

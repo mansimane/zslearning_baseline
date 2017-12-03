@@ -11,7 +11,7 @@ addpath plotting/;
 addpath toolbox/;
 addpath toolbox/minFunc/;
 addpath toolbox/pwmetric/;
-plot_tsne
+%plot_tsne
 % BEGIN primary configurable parameters.
 % - dataset is the image set we're using (CIFAR-10)
 % - word set is the name of the folder within word_data
