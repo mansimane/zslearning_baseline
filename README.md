@@ -49,10 +49,3 @@ Quantization. A. Coates and A. Ng. In ICML, 2011.
 Prototypes. Eric H. Huang, Richard Socher, Christopher D. Manning and Andrew Y.
 Ng. Association for Computational Linguistics 2012 Conference (ACL 2012).
 
-#Code hacks in dev mode to run code faster (can get very bad results)
-1.Run splitData.m script on extracted features
-2.Create folder names cifar10_small in image_data/features folder
-3.In main.m line 15, make fields.dataset as cifar10_small
-4.trainFunctions/trainMapping.m line 16, make maxIter as 10 instead of 500.
-5.nonZeroShotTrain line 17, make maxIte as 10 instead of 500.
-

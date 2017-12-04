@@ -15,36 +15,34 @@ zeroCategories = [4, 10]; % Cat, truck (by default, as used in the paper)
 confusionCategories = [ 4, 10 ]; % Categories to use in nearest neighbor search.
                                  % May or may not be equal to zeroCategories.
 numDistractors = 2:2:40; % Sequence of distractor word numbers (x-axis on graph)
-% 2     4     6     8    10    12    14    16    18  
+
 %%% Begin code
 
 addpath toolbox/pwmetric/;
 
 disp('Loading random words for evaluation');
-ee = load(['word_data/' dataset '/wordreps_orig.mat']);
+ee = load(['word_data/' dataset '/wordreps.mat']);
 vv = load(['word_data/' dataset '/vocab.mat']);
 
-load image_data/images/cifar10_small/meta.mat;
-load(['word_data/acl' '/cifar10_small/wordTable.mat']);
+load image_data/images/cifar10/meta.mat;
+load(['word_data/acl' '/cifar10/wordTable.mat']);
 
-%Xt = testX(:, testY == 10);
+Xt = testX(:, testY == 10);
 Yt = testY(testY == 10);
-%mX = mapDoMap(Xt, theta{7}, trainParams);
-load('.\gauss_cifar10_acl_cat_truck\mappedTestImages.mat');
-% mX = 
-%???
+mX = mapDoMap(Xt, theta, trainParams);
+
 accuracies = zeros(length(confusionCategories)+1, length(numDistractors));
 for tt = 1:length(confusionCategories)
-    confusionWordIds = knnsearch(ee.oWe', wordTable(:, confusionCategories(tt))', 'K', 100);
+    confusionWordIds = knnsearch(ee.We(:,:,tt)', wordTable(:, confusionCategories(tt))', 'K', 100);
     confusionWords_trainedRemoved = confusionWordIds(:, ~ismember(vv.vocab(confusionWordIds), label_names));
     fprintf('Neighbors for %s\n', label_names{confusionCategories(tt)});
     disp(vv.vocab(confusionWords_trainedRemoved(1:30)));
     for j = 1:length(numDistractors)
-        words = [ wordTable(:, zeroCategories) ee.oWe(:, confusionWords_trainedRemoved(1:numDistractors(j)))];
+        words = [ wordTable(:, zeroCategories) ee.We(:, confusionWords_trainedRemoved(1:numDistractors(j)), zeroCategories)];
         tDist = slmetric_pw(words, mX, 'eucdist');
         [~, tGuessedCategories ] = min(tDist);
         candidateIds = ismember(tGuessedCategories, 1:length(zeroCategories));
-        accuracies(tt, j) = sum(Yt(candidateIds)' == zeroCategories(tGuessedCategories(candidateIds))) / length(Yt);
+        accuracies(tt, j) = sum(Yt(candidateIds) == zeroCategories(tGuessedCategories(candidateIds))) / length(Yt);
     end
 end
 
@@ -54,18 +52,17 @@ confusionWordIds = randi(length(vv.vocab), 1, 100);
 confusionWords_trainedRemoved = confusionWordIds(:, ~ismember(vv.vocab(confusionWordIds), label_names));
 disp(vv.vocab(confusionWords_trainedRemoved(1:30)));
 for j = 1:length(numDistractors)
-    words = [ wordTable(:, zeroCategories) ee.oWe(:, confusionWords_trainedRemoved(1:numDistractors(j)))];
+    words = [ wordTable(:, zeroCategories) ee.We(:, confusionWords_trainedRemoved(1:numDistractors(j)), zeroCategories)];
     tDist = slmetric_pw(words, mX, 'eucdist');
     [~, tGuessedCategories ] = min(tDist);
     candidateIds = ismember(tGuessedCategories, 1:length(zeroCategories));
-    accuracies(length(confusionCategories)+1, j) = sum(Yt(candidateIds)' == zeroCategories(tGuessedCategories(candidateIds))) / length(Yt);
+    accuracies(length(confusionCategories)+1, j) = sum(Yt(candidateIds) == zeroCategories(tGuessedCategories(candidateIds))) / length(Yt);
 end
 
-figure,
-markers = { '-+r', '-ob', '-m' };
+markers = { '-+r', '-ob', '-dm' };
+hold on;
 for i = 1:length(confusionCategories)+1
     plot(numDistractors, accuracies(i, :), markers{i}, 'linewidth', 2);
-    hold on;
 end
 h_legend = legend([ arrayfun(@(x) ['Neighbors of ', char(x)], label_names(confusionCategories), 'UniformOutput', false)', 'Random']);
 h_xl = xlabel('Number of distractor words');
@@ -79,6 +76,6 @@ set(gcf,'paperunits','centimeters')
 set(gcf,'papersize',[21,20]) % Desired outer dimensionsof figure
 set(gcf,'paperposition',[0,0,21,20]) % Place plot on figure
 
-filename_base = './figures/randomConfusionWords';
+filename_base = '../figures/randomConfusionWords';
 print('-dpdf', sprintf('%s.pdf', filename_base));
 print('-deps', sprintf('%s.eps', filename_base));

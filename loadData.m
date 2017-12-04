@@ -17,7 +17,7 @@ end
 trainY = trainY+1;
 testY =testY + 1;
 % Split data
-if strcmp(dataset, 'cifar10') || strcmp(dataset, 'cifar96') || strcmp(dataset, 'cifar106') || strcmp(dataset, 'cifar10_small')
+if strcmp(dataset, 'cifar10') || strcmp(dataset, 'cifar96') || strcmp(dataset, 'cifar106')
     if strcmp(dataset, 'cifar10')
         TOTAL_NUM_TRAIN = 50000;
         TOTAL_NUM_PER_CATEGORY = 5000;
@@ -27,16 +27,6 @@ if strcmp(dataset, 'cifar10') || strcmp(dataset, 'cifar96') || strcmp(dataset, '
         else
             % 'cat', 'truck'
             zeroCategories = [ 4, 10 ];
-        end
-    elseif strcmp(dataset, 'cifar10_small')
-        TOTAL_NUM_TRAIN = 1000;
-        TOTAL_NUM_PER_CATEGORY = 100;
-        numCategories = 10;
-        if isfield(fullParams,'zeroCategories')
-            zeroCategories = fullParams.zeroCategories;
-        else
-            % 'cat', 'truck' 
-            zeroCategories = [ 4,10];
         end
     elseif strcmp(dataset, 'cifar96')
         TOTAL_NUM_TRAIN = 48000;
@@ -62,7 +52,7 @@ if strcmp(dataset, 'cifar10') || strcmp(dataset, 'cifar96') || strcmp(dataset, '
 
     zeroList = label_names(zeroCategories);
     zeroStr = [sprintf('%s_',zeroList{1:end-1}),zeroList{end}];
-    outputPath = sprintf('gauss_%s_%s_%s_%s', dataset, wordset, zeroStr, num2str(fullParams.lambda_penalty));
+    outputPath = sprintf('gauss_%s_%s_%s', dataset, wordset, zeroStr);
 
     if not(exist(outputPath, 'dir'))
         mkdir(outputPath);
@@ -78,11 +68,8 @@ if strcmp(dataset, 'cifar10') || strcmp(dataset, 'cifar96') || strcmp(dataset, '
     t = zeros(1, numTrainPerCat * length(nonZeroCategories));
     newV = zeros(1, numValidatePerCat * numCategories);
     for i = 1:length(nonZeroCategories)
-        
         [ temp, ~] = find((trainY) == (nonZeroCategories(i)));
-        %Train data indices corresponding to category are stored in t
         t((i-1)*numTrainPerCat+1:i*numTrainPerCat) = temp(1:numTrainPerCat);
-        %Validaiton data 
         newV((i-1)*numValidatePerCat+1:i*numValidatePerCat) = temp(numTrainPerCat+1:end);
     end
     for i = 1:length(zeroCategories)

@@ -1,4 +1,4 @@
-function [theta, trainParams] = trainMapping(X, Y, Xvalidate, Yvalidate, cat_id, trainParams, wordTable, outputPath, theta_idx)
+function [theta, trainParams] = trainMapping(X, Y, trainParams, wordTable)
 
 addpath toolbox/;
 addpath toolbox/minFunc/;
@@ -8,13 +8,12 @@ addpath costFunctions/;
 %% Model Parameters
 fields = {{'wordDataset',         'acl'};            % type of embedding dataset to use ('turian.200', 'acl')
           {'lambda',              1E-4};   % regularization parameter
-          {'lambda_penalty',      0.01};   % regularization parameter
           {'numReplicate',        0};     % one-shot replication
           {'dropoutFraction',     1};    % drop-out fraction
           {'costFunction',        @mapTrainingCostOneLayer}; % training cost function
           {'trainFunction',       @trainLBFGS}; % training function to use
           {'hiddenSize',          200};
-          {'maxIter',             150};    % maximum number of minFunc iterations on a batch
+          {'maxIter',             500};    % maximum number of minFunc iterations on a batch
           {'maxPass',             1};      % maximum number of passes through training data
           {'disableAutoencoder',  true};   % whether to disable autoencoder
           {'maxAutoencIter',      50};     % maximum number of minFunc iterations on a batch
@@ -33,9 +32,6 @@ fields = {{'wordDataset',         'acl'};            % type of embedding dataset
           {'autoencMultStart',    0.01};   % starting value for autoenc mult
           {'sparsityParam',       0.035};  % desired average activation of the hidden units.
           {'beta',                5};      % weight of sparsity penalty term
-          {'epochs',              100};      % Number of epochs to train for
-          {'batch_size',          256};    % Batchsize for gradient calcultation
-          {'lr',                  0.001};    % Batchsize for gradient calcultation
 };
 
 % Load existing model parameters, if they exist
@@ -64,58 +60,11 @@ trainParams.outputSize = size(wordTable, 1);
 [ theta, trainParams.decodeInfo ] = initializeParameters(trainParams);
 
 globalStart = tic;
-% dataToUse.imgs = X;
-% dataToUse.categories = Y;
+dataToUse.imgs = X;
+dataToUse.categories = Y;
 dataToUse.wordTable = wordTable;
-dataToUse.cat_id = cat_id;
-batch_size = trainParams.batch_size;
-no_of_samples = size(X,2);
-train_iter = no_of_samples/ batch_size ;
-indices = randperm(no_of_samples);
-cost_array = zeros(1,trainParams.epochs);
-cost_val_array = zeros(1,trainParams.epochs);
 
-data_val.imgs = Xvalidate;
-data_val.categories = Yvalidate; 
-data_val.wordTable = wordTable;
-data_val.cat_id = cat_id;
-
-for i = 1: trainParams.epochs
-    indices = randperm(no_of_samples);
-    for j = 1:batch_size:no_of_samples-batch_size
-         start_idx = j;
-         end_idx = j+batch_size;
-%         
-%         if start_idx> end_idx
-%             indices = randperm(no_of_samples);
-%             continue
-%         end
-        idx = indices(start_idx:end_idx);
-        dataToUse.imgs = X(:,idx);
-        dataToUse.categories = Y(idx);
-
-        [cost, grad] = mapTrainingCost( theta, dataToUse, trainParams );
-        [theta] = updateParam(theta,grad, trainParams);
-        
-        cost_val = calcCost(theta, data_val, trainParams);
-    end
-    
-    fprintf('Epoch = %d, train loss = %d,Val loss = %d\n', i, cost, cost_val);
-    cost_array(i) = cost;
-    cost_val_array(i) = cost_val;
-end
-%theta = trainParams.trainFunction(trainParams, dataToUse, theta);
-figure;
-plot(cost_array);
-hold on;
-plot(cost_val_array);
-xlabel('epochs');
-ylabel('MSE');
-title('Loss vs Epochs');
-legend('Train loss','Val loss');
-file_name = [outputPath '/training_error_map_' num2str(theta_idx) '.jpg'];
-Image = getframe(gcf);
-imwrite(Image.cdata, file_name);
+theta = trainParams.trainFunction(trainParams, dataToUse, theta);
 
 gtime = toc(globalStart);
 fprintf('Total time: %f s\n', gtime);
