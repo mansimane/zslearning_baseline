@@ -1,4 +1,4 @@
-function [theta, trainParams] = trainMapping(X, Y, cat_id, trainParams, wordTable)
+function [theta, trainParams] = trainMapping(X, Y, Xvalidate, Yvalidate, cat_id, trainParams, wordTable, outputPath, theta_idx)
 
 addpath toolbox/;
 addpath toolbox/minFunc/;
@@ -14,7 +14,7 @@ fields = {{'wordDataset',         'acl'};            % type of embedding dataset
           {'costFunction',        @mapTrainingCostOneLayer}; % training cost function
           {'trainFunction',       @trainLBFGS}; % training function to use
           {'hiddenSize',          200};
-          {'maxIter',             10};    % maximum number of minFunc iterations on a batch
+          {'maxIter',             150};    % maximum number of minFunc iterations on a batch
           {'maxPass',             1};      % maximum number of passes through training data
           {'disableAutoencoder',  true};   % whether to disable autoencoder
           {'maxAutoencIter',      50};     % maximum number of minFunc iterations on a batch
@@ -34,8 +34,8 @@ fields = {{'wordDataset',         'acl'};            % type of embedding dataset
           {'sparsityParam',       0.035};  % desired average activation of the hidden units.
           {'beta',                5};      % weight of sparsity penalty term
           {'epochs',              100};      % Number of epochs to train for
-          {'batch_size',          128};    % Batchsize for gradient calcultation
-          {'lr',                  0.01};    % Batchsize for gradient calcultation
+          {'batch_size',          256};    % Batchsize for gradient calcultation
+          {'lr',                  0.001};    % Batchsize for gradient calcultation
 };
 
 % Load existing model parameters, if they exist
@@ -73,6 +73,13 @@ no_of_samples = size(X,2);
 train_iter = no_of_samples/ batch_size ;
 indices = randperm(no_of_samples);
 cost_array = zeros(1,trainParams.epochs);
+cost_val_array = zeros(1,trainParams.epochs);
+
+data_val.imgs = Xvalidate;
+data_val.categories = Yvalidate; 
+data_val.wordTable = wordTable;
+data_val.cat_id = cat_id;
+
 for i = 1: trainParams.epochs
     indices = randperm(no_of_samples);
     for j = 1:batch_size:no_of_samples-batch_size
@@ -90,18 +97,23 @@ for i = 1: trainParams.epochs
         [cost, grad] = mapTrainingCost( theta, dataToUse, trainParams );
         [theta] = updateParam(theta,grad, trainParams);
         
+        cost_val = calcCost(theta, data_val, trainParams);
     end
     
-    fprintf('Epoch = %d, cost = %d\n', i, cost);
+    fprintf('Epoch = %d, train loss = %d,Val loss = %d\n', i, cost, cost_val);
     cost_array(i) = cost;
+    cost_val_array(i) = cost_val;
 end
 %theta = trainParams.trainFunction(trainParams, dataToUse, theta);
 figure;
 plot(cost_array);
+hold on;
+plot(cost_val_array);
 xlabel('epochs');
 ylabel('MSE');
-title('Error vs Epochs');
-file_name = ['/training_error.jpg'];
+title('Loss vs Epochs');
+legend('Train loss','Val loss');
+file_name = [outputPath '/training_error_map_' num2str(theta_idx) '.jpg'];
 Image = getframe(gcf);
 imwrite(Image.cdata, file_name);
 

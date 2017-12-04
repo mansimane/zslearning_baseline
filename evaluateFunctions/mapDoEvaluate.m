@@ -54,7 +54,7 @@ if doPrint == true
     disp(['Averaged recall: ' num2str(results.avgRecall)]);
     displayConfusionMatrix(confusion, testCategoryNames);
 end
-
+figure;
 imagesc(confusion);
 title('Confustion Matrix post Mapping training');
 file_name = [outputPath '/mapDoEval_conf.jpg'];

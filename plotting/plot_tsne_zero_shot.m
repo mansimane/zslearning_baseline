@@ -37,42 +37,82 @@ num_seen_cats = 8;
     
 mappedWordTable_t = t(numImages*num_seen_cats+1:end, :);
 sym_array = '+o*.xsd^v><';
-scatter(mappedWordTable_t(:,1), mappedWordTable_t(:,2), 200, 'd', 'k', 'filled');
-hold on;
-for i = 1:length(label_names)-1
-    text(mappedWordTable_t(i,1),mappedWordTable_t(i,2),['  ' label_names{i+1}],'BackgroundColor',[.7 .9 .7]);        
-end
+ idx_z1 = find(Y== zeroCategories(1));
+ idx_z2 = find(Y== zeroCategories(2));
+
 for i=1:num_seen_cats
     mappedX_t = t((i-1)*numImages +1 : (i-1)*numImages + numImages,:);
-    cat_id = nonZeroCategories(i);
-
-%     idx = find(Y~=cat_id);
-%     scatter(mappedX_t(idx,1), mappedX_t(idx,2),3,'bo');
-%     idx = find(Y==cat_id);
-%     scatter(mappedX_t(idx,1), mappedX_t(idx,2),4, 'r+');
-    
+    cat_id = nonZeroCategories(i);    
     %Index finding Can be moved outside loop
-    idx_z1 = find(Y== zeroCategories(1));
-    scatter(mappedX_t(idx_z1,1), mappedX_t(idx_z1,2),3,'g*');
+    p3 = scatter(mappedX_t(idx_z1,1), mappedX_t(idx_z1,2),3,'b*');
     
     idx_z2 = find(Y== zeroCategories(2));
-    scatter(mappedX_t(idx_z2,1), mappedX_t(idx_z1,2),3,'m*');
+    p4 = scatter(mappedX_t(idx_z2,1), mappedX_t(idx_z1,2),3,'r*');
     %gscatter(mappedX_t(idx,1), mappedX_t(idx,2), label_names(Y_bin), [], '+', 8);
     hold on;
     %gscatter(mappedX_t(idx,1), mappedX_t(idx,2), label_names(Y_bin), [], 'o', 8);
     
-%     Y_bin = (Y==cat_id);
-%     Y_bin = (Y_bin* cat_id) + 1;
-%     %unique(Y_bin)
-%      syms = [sym_array(1), sym_array(max(Y_bin))]
-%     %gscatter(mappedX_t(:,1), mappedX_t(:,2), label_names(Y_bin), [], sym_array, 8);
+end
+scatter(mappedWordTable_t(:,1), mappedWordTable_t(:,2), 150, 'd', 'k', 'filled');
+hold on;
+for i = 1:length(label_names)-1
+    text(mappedWordTable_t(i,1),mappedWordTable_t(i,2),['' label_names{i+1}],'BackgroundColor',[.7 .9 .7]);        
 end
 
 axis off;
 hold off;
 
+legend([p3,p4],'Zero Shot category Cat','Zero Shot category Truck', 'Location','northeast');
+axis off;
+hold off;
+set(gcf,'paperunits','centimeters')
+set(gcf,'papersize',[30,25]) % Desired outer dimensionsof figure
+set(gcf,'paperposition',[0,0,30,25]) % Place plot on figure
+
 %title('Confustion Matrix post Mapping training');
 file_name = [outputPath '/SemanticWordSpace_zero_shot.jpg'];
+Image = getframe(gcf);
+imwrite(Image.cdata, file_name);
+
+%% Plot both
+figure;
+sym_array = '+o*.xsd^v><';
+ idx_z1 = find(Y== zeroCategories(1));
+ idx_z2 = find(Y== zeroCategories(2));
+
+for i=1:num_seen_cats
+    mappedX_t = t((i-1)*numImages +1 : (i-1)*numImages + numImages,:);
+    cat_id = nonZeroCategories(i);
+
+     idx = find(Y~=cat_id);
+    p1 = scatter(mappedX_t(idx,1), mappedX_t(idx,2),3,'co');
+     idx = find(Y==cat_id);
+    p2 = scatter(mappedX_t(idx,1), mappedX_t(idx,2),4, 'r+');
+        %Index finding Can be moved outside loop
+    p3 = scatter(mappedX_t(idx_z1,1), mappedX_t(idx_z1,2),3,'b*');
+    
+    idx_z2 = find(Y== zeroCategories(2));
+    p4 =scatter(mappedX_t(idx_z2,1), mappedX_t(idx_z1,2),3,'m*');
+    %gscatter(mappedX_t(idx,1), mappedX_t(idx,2), label_names(Y_bin), [], '+', 8);
+    hold on;
+    %gscatter(mappedX_t(idx,1), mappedX_t(idx,2), label_names(Y_bin), [], 'o', 8);
+    end
+scatter(mappedWordTable_t(:,1), mappedWordTable_t(:,2), 150, 'd', 'k', 'filled');
+hold on;
+for i = 1:length(label_names)-1
+    text(mappedWordTable_t(i,1),mappedWordTable_t(i,2),[ label_names{i+1}],'BackgroundColor',[.7 .9 .7]);        
+%    text(mappedWordTable_t(i,1),mappedWordTable_t(i,2),['  ' label_names{i+1}]);        
+end
+
+legend([p1,p2,p3,p4],'Non-class Image','Class Image','Zero Shot cat. 1','Zero Shot cat. 2', 'Location','northeast');
+axis off;
+hold off;
+set(gcf,'paperunits','centimeters')
+set(gcf,'papersize',[30,55]) % Desired outer dimensionsof figure
+set(gcf,'paperposition',[0,0,30,55]) % Place plot on figure
+
+%title('Confustion Matrix post Mapping training');
+file_name = [outputPath '/SemanticWordSpace_both_shot.jpg'];
 Image = getframe(gcf);
 imwrite(Image.cdata, file_name);
 

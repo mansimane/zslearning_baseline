@@ -33,23 +33,20 @@ num_seen_cats = 8;
 % [C,t,l]= pca([mappedTestImages{1} mappedTestImages{2} mappedTestImages{3} ...
 %     mappedTestImages{4} mappedTestImages{5} mappedTestImages{6} ...
 %     mappedTestImages{7} mappedTestImages{8} wordTable]','NumComponents',2);
- %t = tsne([mappedTestImages{1} mappedTestImages{2} mappedTestImages{3} mappedTestImages{4} mappedTestImages{5} mappedTestImages{6}  mappedTestImages{7} mappedTestImages{8} wordTable]');
+t = tsne([mappedTestImages{1} mappedTestImages{2} mappedTestImages{3} mappedTestImages{4} mappedTestImages{5} mappedTestImages{6}  mappedTestImages{7} mappedTestImages{8} wordTable]');
     
 mappedWordTable_t = t(numImages*num_seen_cats+1:end, :);
 sym_array = '+o*.xsd^v><';
 scatter(mappedWordTable_t(:,1), mappedWordTable_t(:,2), 200, 'd', 'k', 'filled');
 hold on;
-for i = 1:length(label_names)-1
-    text(mappedWordTable_t(i,1),mappedWordTable_t(i,2),['  ' label_names{i+1}],'BackgroundColor',[.7 .9 .7]);        
-end
 for i=1:num_seen_cats
     mappedX_t = t((i-1)*numImages +1 : (i-1)*numImages + numImages,:);
     cat_id = nonZeroCategories(i);
 
     idx = find(Y~=cat_id);
-    scatter(mappedX_t(idx,1), mappedX_t(idx,2),3,'bo');
+    p1 = scatter(mappedX_t(idx,1), mappedX_t(idx,2),3,'bo');
     idx = find(Y==cat_id);
-    scatter(mappedX_t(idx,1), mappedX_t(idx,2),4, 'r+');
+    p2 = scatter(mappedX_t(idx,1), mappedX_t(idx,2),4, 'r+');
     %gscatter(mappedX_t(idx,1), mappedX_t(idx,2), label_names(Y_bin), [], '+', 8);
     hold on;
     %gscatter(mappedX_t(idx,1), mappedX_t(idx,2), label_names(Y_bin), [], 'o', 8);
@@ -60,7 +57,11 @@ for i=1:num_seen_cats
 %      syms = [sym_array(1), sym_array(max(Y_bin))]
 %     %gscatter(mappedX_t(:,1), mappedX_t(:,2), label_names(Y_bin), [], sym_array, 8);
 end
+for i = 1:length(label_names)-1
+    text(mappedWordTable_t(i,1),mappedWordTable_t(i,2),['  ' label_names{i+1}],'BackgroundColor',[.7 .9 .7]);        
+end
 
+legend([p1,p2],'Non-class Image','Class Image', 'Location','northeast');
 
 axis off;
 hold off;
