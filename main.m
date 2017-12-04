@@ -38,12 +38,11 @@ disp('Training mapping function');
 trainParams.imageDataset = fullParams.dataset;
 trainParams.lambda_penalty = fullParams.lambda_penalty;
 
-
-% for i =1: length(nonZeroCategories)
-%     cat_id = nonZeroCategories(i);
-%     [theta{i}, trainParams ] = trainMapping(X, Y, cat_id, trainParams, wordTable);
-% 
-% end
+ for i =1: length(nonZeroCategories)
+     cat_id = nonZeroCategories(i);
+     [theta{i}, trainParams ] = trainMapping(X, Y, cat_id, trainParams, wordTable);
+ 
+ end
 load('./gauss_cifar10_acl_cat_truck/theta.mat');
 seen_label_names = label_names(nonZeroCategories);
 mapDoEvaluate(X, Y, nonZeroCategories, label_names, seen_label_names, wordTable, theta, trainParams,outputPath, true);
@@ -71,7 +70,8 @@ trainParamsUnseen.imageDataset = fullParams.dataset;
 trainParamsUnseen.wordDataset = fullParams.wordset;
 [thetaUnseen, trainParamsUnseen] = zeroShotTrain(trainParamsUnseen);
 save(sprintf('%s/thetaUnseenSoftmax.mat', outputPath), 'thetaUnseen', 'trainParamsUnseen');
-% 
+save(sprintf('%s/trainParamsUnseen.mat', outputPath),  'trainParamsUnseen');
+
 % % Train Gaussian classifier %mu 10x50, sigma: 10x1
 D =trainParams.outputSize;
 mu = zeros(numCategories, D );
@@ -137,9 +137,15 @@ for i = 1:resolution
     gUnseenAccuracies(i) = results.unseenAccuracy;
     gAccuracies(i) = results.accuracy;
 end
+%Flipping because plotting with cutoff flipped as in decreasing
  gSeenAccuracies = fliplr(gSeenAccuracies);
  gUnseenAccuracies = fliplr(gUnseenAccuracies);
  gAccuracies = fliplr(gAccuracies);
-% 
- plot_Gaussian_model
+save(sprintf('%s/gSeenAccuracies.mat', outputPath), 'gSeenAccuracies');
+save(sprintf('%s/gUnseenAccuracies.mat', outputPath), 'gUnseenAccuracies');
+save(sprintf('%s/gAccuracies.mat', outputPath), 'gAccuracies');
+
+plot_Gaussian_model
 % plot_randomConfusionWords_6
+plot_tsne
+plot_tsne_zero_shot
