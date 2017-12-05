@@ -177,7 +177,9 @@ validY =Yvalidate;
 pdfSeenAccuracies = results.seenAccuracy;
 pdfUnseenAccuracies = results.unseenAccuracy;
 pdfAccuracies = results.accuracy;
+save(sprintf('%s/pdfresults.mat', outputPath),  'results');
 
+plot_tsne;
 %Save results.
 %save(sprintf('%s/out_%s.mat', outputPath, zeroStr), 'gSeenAccuracies', 'gUnseenAccuracies', 'gAccuracies', ...
 %     'loopSeenAccuracies', 'loopUnseenAccuracies', 'loopAccuracies', 'pdfSeenAccuracies', 'pdfUnseenAccuracies', ...
