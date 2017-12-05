@@ -64,6 +64,8 @@ sortedLogprobabilities = sort(predictGaussianDiscriminant(mapped, mu, sigma, pri
 
 % Test
 mappedTestImages = mapDoMap(testX, theta, trainParams);
+save(sprintf('%s/mappedTestImages.mat', outputPath), 'mappedTestImages');
+save(sprintf('%s/mappedTestData.mat', outputPath), 'mappedTestImages', 'testY');
 
 resolution = 11;
 gSeenAccuracies = zeros(1, resolution);
@@ -88,6 +90,7 @@ gUnseenAccuracies = fliplr(gUnseenAccuracies);
 gAccuracies = fliplr(gAccuracies);
 
 plot_Gaussian_model
+plot_tsne
 % disp('Training LoOP model');
 % fullParams.resolution = resolution;
 % resolution = fullParams.resolution - 1;
@@ -182,5 +185,5 @@ pdfAccuracies = results.accuracy;
 % 
 %Plot graphs
 % plot_unseen_bar_3
-plot_modelComparisons_4
+% plot_modelComparisons_4
 %plot_randomConfusionWords_6
