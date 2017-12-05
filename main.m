@@ -12,7 +12,7 @@ addpath toolbox/pwmetric/;
 % - dataset is the image set we're using (CIFAR-10)
 % - word set is the name of the folder within word_data
 % containing word vectors (see README for details).
-fields = {{'dataset',        'cifar10'};
+fields = {{'dataset',        'cifar10_small'};
           {'wordset',        'acl'};
 };
 % END primary configurable parameters.
@@ -167,13 +167,16 @@ validY =Yvalidate;
     thetaMapping, seenSmTrainParams, unseenSmTrainParams, mapTrainParams, validX, ...
     validY, cutoffs, zeroCategories, nonZeroCategories, label_names, wordTable, true);
 
+% [ guessedCategories, results ] = evaluateGaussianBayesian(thetaSeenSoftmax, thetaUnseenSoftmax, ...
+%     thetaMapping, seenSmTrainParams, unseenSmTrainParams, mapTrainParams, trainX, ...
+%     trainY, cutoffs, zeroCategories, nonZeroCategories, label_names, wordTable, true);
 
 pdfSeenAccuracies = results.seenAccuracy;
 pdfUnseenAccuracies = results.unseenAccuracy;
 pdfAccuracies = results.accuracy;
 
 %Save results.
-% save(sprintf('%s/out_%s.mat', outputPath, zeroStr), 'gSeenAccuracies', 'gUnseenAccuracies', 'gAccuracies', ...
+%save(sprintf('%s/out_%s.mat', outputPath, zeroStr), 'gSeenAccuracies', 'gUnseenAccuracies', 'gAccuracies', ...
 %     'loopSeenAccuracies', 'loopUnseenAccuracies', 'loopAccuracies', 'pdfSeenAccuracies', 'pdfUnseenAccuracies', ...
 %     'pdfAccuracies', 'bayesianResult');
 % 

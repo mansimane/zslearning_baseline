@@ -49,7 +49,7 @@ end
 
 figure('units','normalized','outerposition',[0 0 1 1]);
 imagesc(confusion);
-title('Confustion Matrix post Seen Softmax training');
+title('Confustion Matrix after Seen Softmax training');
 colorbar;
 xticklabels(categoryNames);
 yticklabels(categoryNames);

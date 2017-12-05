@@ -41,10 +41,10 @@ if doPrint == true
     displayConfusionMatrix(confusion, testCategoryNames);
 end
 
-figure;
+figure('units','normalized','outerposition',[0 0 1 1])
 imagesc(confusion);
 colorbar;
-title('Confustion Matrix after Mapping ');
+title('Confustion Matrix after Map Training ');
 xticklabels(labels);
 yticklabels(labels);
 file_name = [outputPath '/mapDoEval_conf.jpg'];

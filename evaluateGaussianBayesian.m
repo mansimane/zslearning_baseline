@@ -32,7 +32,7 @@ for c_i = 1:length(nonZeroCategoryTypes)
     dists = slmetric_pw(centerVector, mappedImages, 'eucdist');
     probs(dists < cutoffs(currentCategory)) = 0; % falls in circle; is not unseen    
 end
-
+%probs = 0 Seen, probs = 1 Unseen
 finalProbs = bsxfun(@times, probSeenFull, 1 - probs') + bsxfun(@times, probUnseenFull, probs');
 [~, guessedCategories ] = max(finalProbs);
 
