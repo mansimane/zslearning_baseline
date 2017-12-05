@@ -1,4 +1,4 @@
-function [ results ] = softmaxDoEvaluate( images, categories, categoryNames, theta, trainParams, doPrint, zeroCategories )
+function [ results ] = softmaxDoEvaluate( images, categories, categoryNames, theta, trainParams, doPrint, zeroCategories,outputPath )
 
 W = stack2param(theta, trainParams.decodeInfo);
 numCategories = length(categoryNames);
@@ -6,6 +6,11 @@ numImages = size(images, 2);
 
 pred = exp(W{1}*images); % k by n matrix with all calcs needed
 pred = bsxfun(@rdivide,pred,sum(pred));
+
+pred_new = zeros(numCategories, numImages);
+pred_new(zeroCategories,:) = -inf;
+pred_new(~ismember(1:10,zeroCategories),:) = pred;
+pred = pred_new;
 [~, guessedCategories] = max(pred);
 
 % Calculate scores
@@ -41,6 +46,16 @@ if doPrint == true
     end
     displayConfusionMatrix(confusion, categoryNames);
 end
+
+figure('units','normalized','outerposition',[0 0 1 1]);
+imagesc(confusion);
+title('Confustion Matrix post Seen Softmax training');
+colorbar;
+xticklabels(categoryNames);
+yticklabels(categoryNames);
+file_name = [outputPath '/softmaxDoEval_conf.jpg'];
+Image = getframe(gcf);
+imwrite(Image.cdata, file_name);
 
 end
 

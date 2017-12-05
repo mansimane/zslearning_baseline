@@ -1,7 +1,8 @@
-function [ guessedCategoriesDebug, results ] = mapDoEvaluate( images, categories, originalCategoryNames, testCategoryNames, testWordTable, theta, trainParams, doPrint )
+function [ guessedCategoriesDebug, results ] = mapDoEvaluate( images, categories, nonZeroCategories, originalCategoryNames, testCategoryNames, testWordTable, theta, trainParams,outputPath, doPrint, labels )
 
 numImages = size(images, 2);
 numCategories = size(testWordTable, 2);
+numSeenCat = length(nonZeroCategories); 
 
 % Feedforward
 mappedImages = mapDoMap(images, theta, trainParams);
@@ -15,7 +16,6 @@ for i = 1:length(originalCategoryNames)
     mappedCategorySet(i) = find(strcmp(originalCategoryNames{i}, testCategoryNames));
 end
 mappedCategories = arrayfun(@(x) mappedCategorySet(x), categories);
-
 guessedCategoriesDebug = [ dist; mappedCategories'; guessedCategories ];
 
 % Calculate scores
@@ -40,6 +40,16 @@ if doPrint == true
     disp(['Averaged recall: ' num2str(results.avgRecall)]);
     displayConfusionMatrix(confusion, testCategoryNames);
 end
+
+figure;
+imagesc(confusion);
+colorbar;
+title('Confustion Matrix after Mapping ');
+xticklabels(labels);
+yticklabels(labels);
+file_name = [outputPath '/mapDoEval_conf.jpg'];
+Image = getframe(gcf);
+imwrite(Image.cdata, file_name);
 
 end
 
