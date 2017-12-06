@@ -2,7 +2,7 @@
 
 function [] = visualize(mappedX, Y, mappedWordTable, label_names,outputPath, images, images_to_show)
 
-gscatter(mappedX(:,1), mappedX(:,1), label_names(Y), [],'+o*.xsd^v>', 7);
+gscatter(mappedX(:,1), mappedX(:,2), label_names(Y), [],'+o*.xsd^v>', 7);
 hold on;
 
 % Add actual images

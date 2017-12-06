@@ -4,7 +4,7 @@
 % uncomment depending on what you want to map:
 % training data (no zero shot classes) or test data (includes zero shot classes)
 %  load('mappedTrainData.mat');
-load([outputPath './mappedTestData.mat']);
+load([outputPath '/mappedTestData.mat']);
 
 load('word_data/acl/cifar10/wordTable.mat')
 mappedX = mappedTestImages;
