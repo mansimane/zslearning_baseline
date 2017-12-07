@@ -12,7 +12,7 @@ addpath toolbox/pwmetric/;
 % - dataset is the image set we're using (CIFAR-10)
 % - word set is the name of the folder within word_data
 % containing word vectors (see README for details).
-fields = {{'dataset',        'cifar10'};
+fields = {{'dataset',        'cifar10_small'};
           {'wordset',        'acl'};
 };
 % END primary configurable parameters.
@@ -90,7 +90,33 @@ gUnseenAccuracies = fliplr(gUnseenAccuracies);
 gAccuracies = fliplr(gAccuracies);
 
 plot_Gaussian_model
-plot_tsne
+cutoffs = generateGaussianCutoffs(thetaSeen, thetaUnseen, theta, trainParamsSeen, ...
+   trainParamsUnseen, trainParams, X, Y, wordTable, 0.05, 1, zeroCategories, nonZeroCategories);
+
+disp('Run Bayesian pipeline for Gaussian model');
+thetaSeenSoftmax = thetaSeen;
+thetaUnseenSoftmax =  thetaUnseen;
+seenSmTrainParams = trainParamsSeen;
+unseenSmTrainParams = trainParamsUnseen;
+mapTrainParams = trainParams;
+thetaMapping = theta;
+
+validX = Xvalidate;
+validY =Yvalidate;
+[ guessedCategories, results ] = evaluateGaussianBayesian(thetaSeenSoftmax, thetaUnseenSoftmax, ...
+    thetaMapping, seenSmTrainParams, unseenSmTrainParams, mapTrainParams, validX, ...
+    validY, cutoffs, zeroCategories, nonZeroCategories, label_names, wordTable, true);
+
+% [ guessedCategories, results ] = evaluateGaussianBayesian(thetaSeenSoftmax, thetaUnseenSoftmax, ...
+%     thetaMapping, seenSmTrainParams, unseenSmTrainParams, mapTrainParams, trainX, ...
+%     trainY, cutoffs, zeroCategories, nonZeroCategories, label_names, wordTable, true);
+
+pdfSeenAccuracies = results.seenAccuracy;
+pdfUnseenAccuracies = results.unseenAccuracy;
+pdfAccuracies = results.accuracy;
+save(sprintf('%s/pdfresults.mat', outputPath),  'results');
+
+plot_tsne;
 % disp('Training LoOP model');
 % fullParams.resolution = resolution;
 % resolution = fullParams.resolution - 1;
@@ -153,33 +179,7 @@ plot_tsne
 % 
 % %%%%%%
 % 
-cutoffs = generateGaussianCutoffs(thetaSeen, thetaUnseen, theta, trainParamsSeen, ...
-   trainParamsUnseen, trainParams, X, Y, wordTable, 0.05, 1, zeroCategories, nonZeroCategories);
 
-disp('Run Bayesian pipeline for Gaussian model');
-thetaSeenSoftmax = thetaSeen;
-thetaUnseenSoftmax =  thetaUnseen;
-seenSmTrainParams = trainParamsSeen;
-unseenSmTrainParams = trainParamsUnseen;
-mapTrainParams = trainParams;
-thetaMapping = theta;
-
-validX = Xvalidate;
-validY =Yvalidate;
-[ guessedCategories, results ] = evaluateGaussianBayesian(thetaSeenSoftmax, thetaUnseenSoftmax, ...
-    thetaMapping, seenSmTrainParams, unseenSmTrainParams, mapTrainParams, validX, ...
-    validY, cutoffs, zeroCategories, nonZeroCategories, label_names, wordTable, true);
-
-% [ guessedCategories, results ] = evaluateGaussianBayesian(thetaSeenSoftmax, thetaUnseenSoftmax, ...
-%     thetaMapping, seenSmTrainParams, unseenSmTrainParams, mapTrainParams, trainX, ...
-%     trainY, cutoffs, zeroCategories, nonZeroCategories, label_names, wordTable, true);
-
-pdfSeenAccuracies = results.seenAccuracy;
-pdfUnseenAccuracies = results.unseenAccuracy;
-pdfAccuracies = results.accuracy;
-save(sprintf('%s/pdfresults.mat', outputPath),  'results');
-
-plot_tsne;
 %Save results.
 %save(sprintf('%s/out_%s.mat', outputPath, zeroStr), 'gSeenAccuracies', 'gUnseenAccuracies', 'gAccuracies', ...
 %     'loopSeenAccuracies', 'loopUnseenAccuracies', 'loopAccuracies', 'pdfSeenAccuracies', 'pdfUnseenAccuracies', ...
